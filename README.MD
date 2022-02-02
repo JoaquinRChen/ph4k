@@ -6,7 +6,8 @@
 
 - Install nodejs.
 - Install ts-node globally: `npm i -g ts-node`.
-- Install Chrome to [default path](/src/utils/puppeteer.ts#L10).
+- Install Chrome to [default path](/src/utils/puppeteer.ts#L10) for puppeteer-core to resolve video url.
+- Install FFmpeg to merge video segments.
 - Clone this repository.
 - Run script below to install this cli:
 
