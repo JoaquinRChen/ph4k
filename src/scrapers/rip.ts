@@ -30,7 +30,7 @@ export const rip = async (args: RipArgs) => {
     // Download video segments
     const files = new Array<string>();
 
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20000; i++) {
         try {
             const file = await downloadSegment(result.segment, dir, i, args.proxy);
             files.push(`file '${file}'`);
@@ -43,13 +43,24 @@ export const rip = async (args: RipArgs) => {
     const filesPath = path.join(dir, 'files.txt');
     await fs.outputFile(filesPath, files.join('\n'));
     const mergedPath = path.join(dir, slugify(`${result.title}.${result.viewKey}.mp4`, '.'));
-    exec(`ffmpeg -f concat -safe 0 -i ${filesPath} -c copy ${mergedPath}`);
-    console.log('file saved to', mergedPath);
+    await new Promise<void>((resolve, reject) => {
+        exec(`ffmpeg -f concat -safe 0 -i ${filesPath} -c copy ${mergedPath}`, (err) => {
+            if (err) {
+                console.error(err);
+                reject(err);
+                return;
+            }else{
+                console.log('file saved to', mergedPath);
+                resolve();
+                return;
+            }
+        });
+    });
 
     // Remove temporary files
-    fs.readdirSync(dir).forEach(file => {
-        if (file === 'files.txt' || path.extname(file) === '.ts') {
-            fs.unlinkSync(path.join(dir, file));
+    fs.readdirSync(dir).forEach(f=> {
+        if (f === 'files.txt' || path.extname(f) === '.ts') {
+            fs.unlinkSync(path.join(dir, f));
         }
     });
 }
