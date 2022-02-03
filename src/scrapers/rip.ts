@@ -42,7 +42,7 @@ export const rip = async (args: RipArgs) => {
     // Merge video segments with ffmpeg
     const filesPath = path.join(dir, 'files.txt');
     await fs.outputFile(filesPath, files.join('\n'));
-    const mergedPath = path.join(dir, slugify(`${result.title}.${result.viewKey}.mp4`, '.'));
+    const mergedPath = path.join(dir, slugify(`${result.title}.${result.viewKey}.mp4`, '.')).replace("'", '');
     await new Promise<void>((resolve, reject) => {
         exec(`ffmpeg -f concat -safe 0 -i ${filesPath} -c copy ${mergedPath}`, (err) => {
             if (err) {
