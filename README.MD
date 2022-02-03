@@ -24,6 +24,15 @@ ph4k "<VIDEO_URL>" --proxy=<PROXY_URL> --headless
 
 `ph4k` will download video at the highest quality only, if you do not log in, downloading may fail.
 
+## Options and Config
+
+| Option | Description |
+| ------ | ----------- |
+| --proxy | Proxy url  |
+| --headless | Run in headless mode |
+
+Options can be passed from command line or config file `~/.ph4k/config.json`.
+
 ## Cookies
 
 Pornhub requires login to stream video with quality higher than 1080p.
