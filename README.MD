@@ -41,7 +41,7 @@ ph4k "<VIDEO_URL>" --proxy=<PROXY_URL> --headless --download-dir=<DOWNLOAD_DIR>
 There are 3 ways to set config:
 - Pass from command line argv.
 - Use `ph4k set <key>=<value>` command to set config.
-- Edit configs in file `~/.ph4k/config.json`.
+- Edit configs in file `~/.config/ph4k/config.json`.
 
 ## Cookies
 
@@ -50,9 +50,9 @@ There are 3 ways to set config:
 There are two ways to use cookies:
 
 1. Use `phk4 login` command to log in pornhub.
-2. Save cookies as json manually at `~/.ph4k/pornhub-cookies.json`(`~/.ph4k/pornhub-premium-cookies.json` for premium content). Cookies can be exported with extension like [EditThisCookie](https://www.editthiscookie.com/) from browser.
+2. Save cookies as json manually at `~/.config/ph4k/pornhub-cookies.json`(`~/.config/ph4k/pornhub-premium-cookies.json` for premium content). Cookies can be exported with extension like [EditThisCookie](https://www.editthiscookie.com/) from browser.
 
 ## Download path
 
-The default download path is `~/.ph4k/`.
+The default download path is `~/Downloads/ph4k/`.
 

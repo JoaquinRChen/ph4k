@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import {PORNHUB_COOKIES_PATH, PORNHUB_PREMIUM_COOKIES_PATH} from './login';
 import qs from 'qs';
 import path from 'path';
-import {APP_DATA_DIR} from '../utils/paths';
+import {DEFAULT_DOWNLOAD_DIR, TEMP_DIR} from '../utils/paths';
 import {download} from '../io/download';
 import {exec} from 'child_process';
 import slugify from 'slugify';
@@ -13,7 +13,6 @@ export type RipArgs = {
     url: string;
 } & ScraperOptions
 
-const DEFAULT_DOWNLOAD_DIR = path.join(APP_DATA_DIR, 'Downloads');
 
 /**
  * Rip a pornhub video
@@ -38,7 +37,7 @@ export const rip = async (args: RipArgs) => {
     }
 
     // Create a directory for the video
-    const tempDir = path.join(APP_DATA_DIR, result.viewKey!);
+    const tempDir = path.join(TEMP_DIR, result.viewKey!);
     await fs.ensureDir(tempDir);
 
     // Download video segments
@@ -62,7 +61,7 @@ export const rip = async (args: RipArgs) => {
                 console.error(err);
                 reject(err);
                 return;
-            }else{
+            } else {
                 console.log('done!');
                 console.log(`Video saved to ${mergedPath}`);
                 console.log(`Open download directory to see:`, downloadDir);
@@ -106,7 +105,14 @@ export const getVideoUrl = async (args: RipArgs): Promise<{ segment: VideoSegmen
             cookiesFilePath = PORNHUB_PREMIUM_COOKIES_PATH;
         }
 
-        await page.setCookie(...(await fs.readJSON(cookiesFilePath)));
+        try {
+            if (fs.pathExistsSync(cookiesFilePath)) {
+                await page.setCookie(...(await fs.readJSON(cookiesFilePath)));
+            }
+        } catch (e) {
+            console.error(e);
+        }
+
         await page.goto(url);
 
     })
