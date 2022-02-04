@@ -1,17 +1,19 @@
-import {ScraperOptions} from '../options';
 import {newBrowser} from '../utils/puppeteer';
 import fs from 'fs-extra';
-import {PORNHUB_COOKIES_PATH} from './login';
+import {PORNHUB_COOKIES_PATH, PORNHUB_PREMIUM_COOKIES_PATH} from './login';
 import qs from 'qs';
 import path from 'path';
 import {APP_DATA_DIR} from '../utils/paths';
 import {download} from '../io/download';
 import {exec} from 'child_process';
 import slugify from 'slugify';
+import {ScraperOptions} from '../utils/config';
 
 export type RipArgs = {
     url: string;
 } & ScraperOptions
+
+const DEFAULT_DOWNLOAD_DIR = path.join(APP_DATA_DIR, 'Downloads');
 
 /**
  * Rip a pornhub video
@@ -24,15 +26,15 @@ export const rip = async (args: RipArgs) => {
     console.log(result);
 
     // Create a directory for the video
-    const dir = path.join(APP_DATA_DIR, result.viewKey!);
-    await fs.ensureDir(dir);
+    const tempDir = path.join(APP_DATA_DIR, result.viewKey!);
+    await fs.ensureDir(tempDir);
 
     // Download video segments
     const files = new Array<string>();
 
     for (let i = 1; i <= 20000; i++) {
         try {
-            const file = await downloadSegment(result.segment, dir, i, args.proxy);
+            const file = await downloadSegment(result.segment, tempDir, i, args.proxy);
             files.push(`file '${file}'`);
         } catch (e) {
             break;
@@ -40,11 +42,13 @@ export const rip = async (args: RipArgs) => {
     }
 
     // Merge video segments with ffmpeg
-    const filesPath = path.join(dir, 'files.txt');
+    const filesPath = path.join(tempDir, 'files.txt');
     await fs.outputFile(filesPath, files.join('\n'));
-    const mergedPath = path.join(dir, slugify(`${result.title}.${result.viewKey}.mp4`, '.')).replace("'", '');
+    const downloadDir = args.downloadDir || DEFAULT_DOWNLOAD_DIR;
+    await fs.ensureDir(downloadDir);
+    const mergedPath = path.join(downloadDir, slugify(`${result.title}.${result.viewKey}.mp4`, '.')).replace("'", '');
     await new Promise<void>((resolve, reject) => {
-        exec(`ffmpeg -f concat -safe 0 -i ${filesPath} -c copy ${mergedPath}`, (err) => {
+        exec(`ffmpeg -f concat -safe 0 -i "${filesPath}" -c copy "${mergedPath}"`, (err) => {
             if (err) {
                 console.error(err);
                 reject(err);
@@ -57,12 +61,8 @@ export const rip = async (args: RipArgs) => {
         });
     });
 
-    // Remove temporary files
-    fs.readdirSync(dir).forEach(f=> {
-        if (f === 'files.txt' || path.extname(f) === '.ts') {
-            fs.unlinkSync(path.join(dir, f));
-        }
-    });
+    // Remove temp dir
+    await fs.rm(tempDir, {recursive: true});
 }
 
 /**
@@ -89,7 +89,13 @@ export const getVideoUrl = async (args: RipArgs): Promise<{ segment: VideoSegmen
             }
         });
 
-        await page.setCookie(...(await fs.readJSON(PORNHUB_COOKIES_PATH)));
+        let cookiesFilePath = PORNHUB_COOKIES_PATH;
+
+        if (url.indexOf('pornhubpremium.com') > 0) {
+            cookiesFilePath = PORNHUB_PREMIUM_COOKIES_PATH;
+        }
+
+        await page.setCookie(...(await fs.readJSON(cookiesFilePath)));
         await page.goto(url);
 
     })

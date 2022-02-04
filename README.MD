@@ -26,12 +26,16 @@ ph4k "<VIDEO_URL>" --proxy=<PROXY_URL> --headless
 
 ## Options and Config
 
-| Option | Description |
-| ------ | ----------- |
-| --proxy | Proxy url  |
-| --headless | Run in headless mode |
+| Option           | Key         | Data type | Description           |
+|------------------|-------------|-----------|-----------------------|
+| --proxy          | proxy       | string    | Proxy url.            |
+| --headless       | headless    | boolean   | Run in headless mode. |
+| --download-dir   | downloadDir | string    | Download directory.   |
 
-Options can be passed from command line or config file `~/.ph4k/config.json`.
+There are 3 ways to set config:
+- Pass from command line argv.
+- Use `ph4k set <key>=<value>` command to set config.
+- Edit configs in file `~/.ph4k/config.json`.
 
 ## Cookies
 
@@ -44,7 +48,5 @@ There are two ways to use cookies:
 
 ## Download path
 
-```bash
-~/.ph4k/
-```
+The default download path is `~/.ph4k/`.
 
