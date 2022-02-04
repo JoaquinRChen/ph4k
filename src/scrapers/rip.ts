@@ -122,12 +122,23 @@ type VideoSegment = {
     sampleUrl: string;
     query: string;
     urlPath: string;
+    /**
+     * token expiration time
+     */
+    exp?: string;
 }
 
 const getVideoSegmentComponents = (segmentUrl: string): VideoSegment => {
     const [urlPath, query] = segmentUrl.split('?');
+    let exp;
+    try {
+        const ttl = qs.parse(query).ttl as string;
+        exp = new Date(parseInt(ttl, 10) * 1000).toLocaleString();
+    } catch (e) {
+        console.error(e)
+    }
     const basename = path.basename(urlPath);
-    return {sampleUrl: segmentUrl, query, urlPath: urlPath.replace(basename, '')};
+    return {sampleUrl: segmentUrl, query, urlPath: urlPath.replace(basename, ''), exp};
 }
 
 const getViewKey = (url: string): string | undefined => {
