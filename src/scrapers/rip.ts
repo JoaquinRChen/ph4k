@@ -21,9 +21,21 @@ const DEFAULT_DOWNLOAD_DIR = path.join(APP_DATA_DIR, 'Downloads');
  */
 export const rip = async (args: RipArgs) => {
 
+    // Validate download directory
+    const downloadDir = args.downloadDir || DEFAULT_DOWNLOAD_DIR;
+    await fs.ensureDir(downloadDir);
+    console.log(`Download directory:`, downloadDir);
+
     // Resolve video segment url with puppeteer
     const result = await getVideoUrl(args);
     console.log(result);
+
+    // Check if the file exists
+    const mergedPath = path.join(downloadDir, slugify(`${result.title}.${result.viewKey}.mp4`, '.')).replace("'", '');
+    if (fs.existsSync(mergedPath)) {
+        console.log('File already exists, skipping...');
+        return;
+    }
 
     // Create a directory for the video
     const tempDir = path.join(APP_DATA_DIR, result.viewKey!);
@@ -44,9 +56,6 @@ export const rip = async (args: RipArgs) => {
     // Merge video segments with ffmpeg
     const filesPath = path.join(tempDir, 'files.txt');
     await fs.outputFile(filesPath, files.join('\n'));
-    const downloadDir = args.downloadDir || DEFAULT_DOWNLOAD_DIR;
-    await fs.ensureDir(downloadDir);
-    const mergedPath = path.join(downloadDir, slugify(`${result.title}.${result.viewKey}.mp4`, '.')).replace("'", '');
     await new Promise<void>((resolve, reject) => {
         exec(`ffmpeg -f concat -safe 0 -i "${filesPath}" -c copy "${mergedPath}"`, (err) => {
             if (err) {
@@ -56,7 +65,7 @@ export const rip = async (args: RipArgs) => {
             }else{
                 console.log('done!');
                 console.log(`Video saved to ${mergedPath}`);
-                console.log(`Download Directory:`, downloadDir);
+                console.log(`Open download directory to see:`, downloadDir);
                 resolve();
                 return;
             }

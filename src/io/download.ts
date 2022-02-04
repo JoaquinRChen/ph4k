@@ -16,8 +16,8 @@ export type DownloadArgs = {
  * @param proxy
  */
 export const download = async ({url, dist, proxy}: DownloadArgs) => {
-    console.log('download:', url);
-    console.log('write file:', dist);
     const res = await http.get(url).proxy(proxy!);
     await fs.writeFile(dist, res.body, "binary");
+    console.log('# download:', url);
+    console.log('# to:', dist);
 }

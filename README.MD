@@ -30,8 +30,6 @@ ph4k "<VIDEO_URL>"
 ph4k "<VIDEO_URL>" --proxy=<PROXY_URL> --headless --download-dir=<DOWNLOAD_DIR>
 ```
 
-`ph4k` will download video at the highest quality only, if you do not log in, downloading may fail.
-
 ## Options and Config
 
 | Option           | Key         | Data type | Description           |
@@ -47,7 +45,7 @@ There are 3 ways to set config:
 
 ## Cookies
 
-Pornhub requires login to stream video with quality higher than 1080p.
+`ph4k` will `ONLY` download video at its highest quality, you will need to log in your account to access quality higher than 1080p. If the video is at 4K, ripping without cookies will fail.
 
 There are two ways to use cookies:
 
