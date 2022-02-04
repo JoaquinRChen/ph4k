@@ -132,7 +132,8 @@ const getVideoSegmentComponents = (segmentUrl: string): VideoSegment => {
     const [urlPath, query] = segmentUrl.split('?');
     let exp;
     try {
-        const ttl = qs.parse(query).ttl as string;
+        let q = qs.parse(query);
+        const ttl = (q.ttl || q.validto) as string;
         exp = new Date(parseInt(ttl, 10) * 1000).toLocaleString();
     } catch (e) {
         console.error(e)
