@@ -54,7 +54,8 @@ export const rip = async (args: RipArgs) => {
                 reject(err);
                 return;
             }else{
-                console.log('file saved to', mergedPath);
+                console.log('done!');
+                console.log(`Video saved to ${mergedPath}`);
                 resolve();
                 return;
             }
