@@ -17,9 +17,17 @@ npm link
 
 ## Usage
 
+### Command
+
 ```bash
 ph4k [url] [...options]
-ph4k "<VIDEO_URL>" --proxy=<PROXY_URL> --headless
+```
+
+### Example
+
+```bash
+ph4k "<VIDEO_URL>"
+ph4k "<VIDEO_URL>" --proxy=<PROXY_URL> --headless --download-dir=<DOWNLOAD_DIR>
 ```
 
 `ph4k` will download video at the highest quality only, if you do not log in, downloading may fail.
