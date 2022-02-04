@@ -30,7 +30,7 @@ export const rip = async (args: RipArgs) => {
     console.log(result);
 
     // Check if the file exists
-    const mergedPath = path.join(downloadDir, slugify(`${result.title}.${result.viewKey}.mp4`, '.')).replace("'", '');
+    const mergedPath = path.join(downloadDir, slugify(`${result.title}.${result.viewKey}.mp4`, '.')).split("'").join('');
     if (fs.existsSync(mergedPath)) {
         console.log('File already exists, skipping...');
         return;
